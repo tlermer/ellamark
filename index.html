@@ -1,1 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard App</title>
+    <script src="app.js" defer></script>
+</head>
+<body>
+  // Flashcard App for Pre-Kindergarten Children
 
+const books = {
+    "Book 1": ["apple", "ball", "cat", "dog"],
+    "Book 2": ["hat", "tree", "fish", "car"],
+    "Book 3": ["sun", "moon", "star", "sky"],
+    "Book 4": ["cup", "plate", "spoon", "fork"],
+    "Book 5": ["red", "blue", "green", "yellow"],
+    "Book 6": ["lion", "tiger", "bear", "elephant"],
+    "Book 7": ["chair", "table", "bed", "lamp"],
+    "Book 8": ["bird", "frog", "horse", "rabbit"],
+    "Book 9": ["shirt", "pants", "shoes", "hat"],
+    "Book 10": ["milk", "juice", "water", "bread"]
+};
+
+// Initialize the app
+function initApp() {
+    const app = document.getElementById("app");
+
+    // Create a dropdown for book selection
+    const dropdown = document.createElement("select");
+    dropdown.id = "bookSelector";
+
+    // Populate the dropdown with book titles
+    for (const book in books) {
+        const option = document.createElement("option");
+        option.value = book;
+        option.textContent = book;
+        dropdown.appendChild(option);
+    }
+
+    // Create a button to load flashcards
+    const loadButton = document.createElement("button");
+    loadButton.textContent = "Load Flashcards";
+    loadButton.onclick = loadFlashcards;
+
+    // Append dropdown and button to the app
+    app.appendChild(dropdown);
+    app.appendChild(loadButton);
+
+    // Create a container for flashcards
+    const flashcardContainer = document.createElement("div");
+    flashcardContainer.id = "flashcardContainer";
+    app.appendChild(flashcardContainer);
+}
+
+// Load flashcards based on the selected book
+function loadFlashcards() {
+    const selectedBook = document.getElementById("bookSelector").value;
+    const flashcardContainer = document.getElementById("flashcardContainer");
+
+    // Clear any existing flashcards
+    flashcardContainer.innerHTML = "";
+
+    // Get the word list for the selected book
+    const words = books[selectedBook];
+
+    // Create flashcards for each word
+    words.forEach(word => {
+        const flashcard = document.createElement("div");
+        flashcard.className = "flashcard";
+        flashcard.textContent = word;
+
+        // Add a click event to flip the card
+        flashcard.onclick = () => {
+            flashcard.textContent = flashcard.textContent === word ? "?" : word;
+        };
+
+        flashcardContainer.appendChild(flashcard);
+    });
+}
+
+// Add styles for the app
+const style = document.createElement("style");
+style.textContent = `
+    #app {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+    }
+
+    #bookSelector {
+        margin: 10px;
+        padding: 5px;
+        font-size: 16px;
+    }
+
+    button {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    #flashcardContainer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .flashcard {
+        width: 100px;
+        height: 100px;
+        margin: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        background-color: lightblue;
+        border: 2px solid darkblue;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .flashcard:hover {
+        transform: scale(1.1);
+    }
+`;
+
+document.head.appendChild(style);
+
+// Attach the app to the DOM
+const appContainer = document.createElement("div");
+appContainer.id = "app";
+document.body.appendChild(appContainer);
+
+// Initialize the application
+initApp();
+
+</body>
+</html>
