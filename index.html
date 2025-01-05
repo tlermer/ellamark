@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashcard App</title>
-    </head>
+</head>
 <body>
+    <!-- The JavaScript code will dynamically populate this body -->
     <script>
-          // Flashcard App for Pre-Kindergarten Children
+        // Flashcard App for Pre-Kindergarten Children
+
 
 const books = {
     "Book 1": ["apple", "ball", "cat", "dog"],
@@ -26,25 +28,35 @@ const books = {
 function initApp() {
     const app = document.getElementById("app");
 
-    // Create a dropdown for book selection
-    const dropdown = document.createElement("select");
-    dropdown.id = "bookSelector";
+    // Add header and subheading
+    const header = document.createElement("h1");
+    header.textContent = "Ella and Mark Book Series";
+    const subheading = document.createElement("h2");
+    subheading.textContent = "Review Words";
 
-    // Populate the dropdown with book titles
+    app.appendChild(header);
+    app.appendChild(subheading);
+
+    // Create buttons for book selection
+    const bookSelectionContainer = document.createElement("div");
+    bookSelectionContainer.id = "bookSelectionContainer";
+
     for (const book in books) {
-        const option = document.createElement("option");
-        option.value = book;
-        option.textContent = book;
-        dropdown.appendChild(option);
+        const bookButton = document.createElement("button");
+        bookButton.textContent = book;
+        bookButton.className = "bookButton";
+        bookButton.dataset.selected = "false";
+        bookButton.onclick = () => toggleBookSelection(bookButton, book);
+        bookSelectionContainer.appendChild(bookButton);
     }
 
     // Create a button to load flashcards
     const loadButton = document.createElement("button");
-    loadButton.textContent = "Load Flashcards";
+    loadButton.innerHTML = "<span style='color: green;'>▶</span> Load Flashcards";
     loadButton.onclick = loadFlashcards;
 
-    // Append dropdown and button to the app
-    app.appendChild(dropdown);
+    // Append book buttons and load button to the app
+    app.appendChild(bookSelectionContainer);
     app.appendChild(loadButton);
 
     // Create a container for flashcards
@@ -53,30 +65,73 @@ function initApp() {
     app.appendChild(flashcardContainer);
 }
 
-// Load flashcards based on the selected book
+// Toggle book selection
+function toggleBookSelection(button, book) {
+    const isSelected = button.dataset.selected === "true";
+    button.dataset.selected = isSelected ? "false" : "true";
+    button.style.backgroundColor = isSelected ? "grey" : "green";
+    button.style.color = isSelected ? "white" : "black";
+}
+
+// Shuffle array function
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Load flashcards based on the selected books
 function loadFlashcards() {
-    const selectedBook = document.getElementById("bookSelector").value;
+    const selectedBooks = Array.from(document.querySelectorAll(".bookButton[data-selected='true']"))
+        .map(button => button.textContent);
     const flashcardContainer = document.getElementById("flashcardContainer");
 
     // Clear any existing flashcards
     flashcardContainer.innerHTML = "";
 
-    // Get the word list for the selected book
-    const words = books[selectedBook];
+    // Collect words from all selected books
+    let words = [];
+    selectedBooks.forEach(book => {
+        words = words.concat(books[book].map(word => ({ word, book })));
+    });
+
+    // Shuffle the words
+    words = shuffleArray(words);
 
     // Create flashcards for each word
-    words.forEach(word => {
+    words.forEach(({ word, book }) => {
         const flashcard = document.createElement("div");
         flashcard.className = "flashcard";
-        flashcard.textContent = word;
 
-        // Add a click event to flip the card
-        flashcard.onclick = () => {
-            flashcard.textContent = flashcard.textContent === word ? "?" : word;
-        };
+        // Add the word text
+        const wordText = document.createElement("div");
+        wordText.textContent = word;
+        wordText.className = "wordText";
+        flashcard.appendChild(wordText);
+
+        // Add a sound icon
+        const soundIcon = document.createElement("button");
+        soundIcon.textContent = "🔊";
+        soundIcon.className = "soundIcon";
+        soundIcon.onclick = () => playSound(word);
+        flashcard.appendChild(soundIcon);
+
+        // Add the book number
+        const bookNumber = document.createElement("div");
+        bookNumber.textContent = book;
+        bookNumber.className = "bookNumber";
+        flashcard.appendChild(bookNumber);
 
         flashcardContainer.appendChild(flashcard);
     });
+}
+
+// Play sound for a word (placeholder functionality)
+function playSound(word) {
+    const utterance = new SpeechSynthesisUtterance(word);
+    speechSynthesis.speak(utterance);
 }
 
 // Add styles for the app
@@ -88,10 +143,27 @@ style.textContent = `
         margin: 20px;
     }
 
-    #bookSelector {
-        margin: 10px;
-        padding: 5px;
+    #bookSelectionContainer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .bookButton {
+        margin: 5px;
+        padding: 10px 20px;
         font-size: 16px;
+        cursor: pointer;
+        background-color: grey;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .bookButton:hover {
+        background-color: darkgrey;
     }
 
     button {
@@ -109,10 +181,11 @@ style.textContent = `
     }
 
     .flashcard {
-        width: 100px;
+        width: 150px;
         height: 100px;
         margin: 10px;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         font-size: 20px;
@@ -121,10 +194,36 @@ style.textContent = `
         border-radius: 10px;
         cursor: pointer;
         transition: transform 0.2s;
+        position: relative;
     }
 
     .flashcard:hover {
         transform: scale(1.1);
+    }
+
+    .flashcard button.soundIcon {
+        margin-top: 10px;
+        background: none;
+        color: black;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+    .flashcard button.soundIcon:hover {
+        color: darkgrey;
+    }
+
+    .wordText {
+        font-size: 24px;
+    }
+
+    .bookNumber {
+        position: absolute;
+        bottom: 5px;
+        right: 10px;
+        font-size: 14px;
+        color: darkblue;
     }
 `;
 
