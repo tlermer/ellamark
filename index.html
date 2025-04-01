@@ -3,240 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcard App</title>
+    <title>Scramble Word Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .book-buttons {
+            margin-bottom: 20px;
+        }
+
+        .book-buttons button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .book-buttons button.selected {
+            background-color: black;
+            color: white;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card img {
+            width: 125px;
+            height: 125px;
+            margin-bottom: 10px;
+        }
+
+        .scrambled {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .scrambled div {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: grab;
+            font-size: 18px;
+        }
+
+        .slots {
+            display: flex;
+            justify-content: center;
+        }
+
+        .slots div {
+            width: 40px;
+            height: 40px;
+            background-color: #e0e0e0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .card.correct {
+            background-color: lightgreen;
+        }
+
+        #game-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+    </style>
 </head>
 <body>
-    <!-- The JavaScript code will dynamically populate this body -->
+    <div class="book-buttons" id="book-buttons"></div>
+    <button id="load-game" style="margin-bottom: 20px; padding: 10px 20px; background-color: lightgreen; color: black; font-weight: bold;">▶ Load Spell Game</button>
+    <div id="game-container"></div>
+
     <script>
-        // Flashcard App for Pre-Kindergarten Children
+        const books = {
+            book1: [
+                { image: "https://i.ibb.co/Jdwph8V/cat.jpg", word: "cat" },
+                { image: "https://i.ibb.co/19G0FzJ/dog.jpg", word: "dog" },
+                { image: "https://i.ibb.co/5Kzp0Hz/ball.jpg" , word: "ball" },
+                { image: "https://i.ibb.co/1ZPBwKt/Ella.jpg", word: "Ella" },
+                { image: "https://i.ibb.co/GtZBXLn/Mark.jpg", word: "Mark" },
+                
+            ],
+            book2: [
+                { image: "https://i.ibb.co/4tpgJQw/bird.jpg", word: "bird" },
+                { image: "https://i.ibb.co/yYvbSrc/tree.jpg", word: "tree" },
+                { image: "https://i.ibb.co/CVpHCnL/water.jpg", word: "water" },
+                { image: "https://i.ibb.co/kqGPMcY/jump.jpg", word: "jump" },
+                { image: "https://i.ibb.co/fHzKHdL/down.jpg", word: "down" },
+                { image: "https://i.ibb.co/SwyL8HM/in.jpg", word: "in" },
+                { image: "https://i.ibb.co/zRb3RS6/up.jpg", word: "up" },
+            ],
+            book3: [
+                { image: "https://i.ibb.co/WtjsJDZ/cake.jpg", word: "cake" },
+                { image: "https://i.ibb.co/N9y5g05/red.jpg", word: "red" },
+                { image: "https://i.ibb.co/FVYTksb/two.jpg", word: "two" },
+                { image: "https://i.ibb.co/B6fTVNB/eats.jpg", word: "eats" },
+                { image: "https://i.ibb.co/Bypc4JN/one.jpg", word: "one" },
+                { image: "https://i.ibb.co/wsN2Scw/party.jpg", word: "party" },
+            ],
+            book4: [
+                { image: "https://i.ibb.co/0c9W5Cn/apple.jpg", word: "apple"},
+                { image: "https://i.ibb.co/4Nk9CyW/boat.jpg", word: "boat" },
+                { image: "https://i.ibb.co/WnSvtTq/fish.jpg", word: "fish" },
+                { image: "https://i.ibb.co/Gdz5f3J/slide.jpg", word: "slide" },
+                { image: "https://i.ibb.co/jLv73Xy/yellow.jpg", word: "yellow" },
+                { image: "https://i.ibb.co/gTchhKp/hill.jpg", word: "hill" },
+            ],
+            book5: [
+                { image: "https://i.ibb.co/C6kKVyz/blue.jpg", word: "blue" },
+                { image: "https://i.ibb.co/Fn5xsd7/book.jpg",word: "book" },
+                { image: "https://i.ibb.co/bXs478w/school.jpg", word: "school" },
+                { image: "https://i.ibb.co/tHK7sSm/teacher.jpg", word: "teacher" },
+                { image: "https://i.ibb.co/dc6mw3m/reads.jpg", word: "reads" },
+                { image: "https://i.ibb.co/KNZqd1C/books.jpg", word: "books" },
+            ],
+            book6: [
+                { image: "https://i.ibb.co/vXQTFtK/boys.jpg", word: "boys" },
+                { image: "https://i.ibb.co/72nRXV2/girls.jpg", word: "girls" },
+                { image: "https://i.ibb.co/nct2Jgh/grass.jpg", word: "grass" },
+                { image: "https://i.ibb.co/gJPpkHk/swim.jpg", word: "swim" },
+                { image: "https://i.ibb.co/VLrRLM9/run.jpg", word: "run" },
+            ],
+            book7: [
+                { image: "https://i.ibb.co/XzGyk9w/candy.jpg", word: "candy" },
+                { image: "https://i.ibb.co/LzDjN5p/car.jpg", word: "car" },
+                { image: "https://i.ibb.co/5jDC9VP/doll.jpg", word: "doll" },
+                { image: "https://i.ibb.co/3f0F0Pq/money.jpg", word: "money" },
+                { image: "https://i.ibb.co/nRwTDSm/store.png", word: "store" },
+                { image: "https://i.ibb.co/cNWrrsk/toys.jpg", word: "toys" },
+                { image: "https://i.ibb.co/k4Mv4qS/food.jpg", word: "food" },
+            ],
+            book8: [
+                { image: "https://i.ibb.co/GTCYcy0/hockey.jpg", word: "hockey" },
+                { image: "https://i.ibb.co/xhh8hcT/hot.jpg", word: "hot" },
+                { image: "https://i.ibb.co/y864wzy/puck.jpg", word: "puck" },
+                { image: "https://i.ibb.co/tqkxdFQ/stick.jpg", word: "stick" },
+                { image: "https://i.ibb.co/7tBgs51/skates.jpg", word: "skates" },
+                { image: "https://i.ibb.co/8dF8Mhr/net.jpg", word: "net" },
+                { image: "https://i.ibb.co/HFsjxC2/ski.jpg", word: "ski" },
+                { image: "https://i.ibb.co/D53Zz4N/snow.jpg", word: "snow" },
+            ],
+            book9: [
+                { image: "https://i.ibb.co/bbqbMvd/boots.jpg", word: "boots" },
+                { image: "https://i.ibb.co/wpDRNYq/drink.jpg", word: "drink" },
+                { image: "https://i.ibb.co/6FqBTRm/guitar.jpg", word: "guitar" },
+                { image: "https://i.ibb.co/kBT1h6c/piano.jpg",word: "piano" },
+                { image: "https://i.ibb.co/4N7XJDJ/rain.jpg", word: "rain" },
+                { image: "https://i.ibb.co/fnR45HD/table.jpg", word: "table" },
+            ],
+            book10: [
+                { image: "https://i.ibb.co/Tw0nmR7/bed.jpg", word: "bed" },
+                { image: "https://i.ibb.co/cCNSxr7/coach.jpg", word: "caoch" },
+                { image: "https://i.ibb.co/PzcMxMv/Dad.jpg", word: "Dad" },
+                { image: "https://i.ibb.co/SPsWY27/mom.jpg", word: "Mom" },
+                { image: "https://i.ibb.co/xSNx13T/kitchen.jpg", word: "kitchen" }, 
+                { image: "https://i.ibb.co/FJVXgLJ/night.jpg", word: "night" },
+                { image: "https://i.ibb.co/Zzdzhkb/soccer.jpg", word: "soccer" },
+                { image: "https://i.ibb.co/tPQLrWr/team.jpg", word: "team" },
+            ],
+        };
+        const bookKeys = Object.keys(books);
+        const selectedBooks = new Set();
+        const bookButtonsContainer = document.getElementById("book-buttons");
+        const gameContainer = document.getElementById("game-container");
+        const loadGameButton = document.getElementById("load-game");
 
+        // Function to shuffle an array
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
 
-const books = {
-    "Book 1": ["apple", "ball", "cat", "dog"],
-    "Book 2": ["hat", "tree", "fish", "car"],
-    "Book 3": ["sun", "moon", "star", "sky"],
-    "Book 4": ["cup", "plate", "spoon", "fork"],
-    "Book 5": ["red", "blue", "green", "yellow"],
-    "Book 6": ["lion", "tiger", "bear", "elephant"],
-    "Book 7": ["chair", "table", "bed", "lamp"],
-    "Book 8": ["bird", "frog", "horse", "rabbit"],
-    "Book 9": ["shirt", "pants", "shoes", "hat"],
-    "Book 10": ["milk", "juice", "water", "bread"]
-};
+        // Create buttons for each book
+        bookKeys.forEach((bookKey) => {
+            const button = document.createElement("button");
+            button.textContent = bookKey.charAt(0).toUpperCase() + bookKey.slice(1);
+            button.addEventListener("click", () => {
+                if (selectedBooks.has(bookKey)) {
+                    selectedBooks.delete(bookKey);
+                    button.classList.remove("selected");
+                } else {
+                    selectedBooks.add(bookKey);
+                    button.classList.add("selected");
+                }
+            });
+            bookButtonsContainer.appendChild(button);
+        });
 
-// Initialize the app
-function initApp() {
-    const app = document.getElementById("app");
+        // Load game when the "Load Game" button is clicked
+        loadGameButton.addEventListener("click", () => {
+            const selectedCards = [...selectedBooks].flatMap((key) => 
+                books[key].map((card) => ({ ...card, book: key }))
+            );
+            shuffle(selectedCards); // Shuffle the selected cards
+            loadGame(selectedCards);
+        });
 
-    // Add header and subheading
-    const header = document.createElement("h1");
-    header.textContent = "Ella and Mark Book Series";
-    const subheading = document.createElement("h2");
-    subheading.textContent = "Review Words";
+        // Function to load the game
+        function loadGame(cards) {
+            gameContainer.innerHTML = ""; // Clear previous game
+            cards.forEach((card) => createCard(card, gameContainer));
+        }
 
-    app.appendChild(header);
-    app.appendChild(subheading);
+        // Function to create a card
+        function createCard(cardData, container) {
+            const card = document.createElement("div");
+            card.classList.add("card");
 
-    // Create buttons for book selection
-    const bookSelectionContainer = document.createElement("div");
-    bookSelectionContainer.id = "bookSelectionContainer";
+            // Create and append the image
+            const img = document.createElement("img");
+            img.src = cardData.image;
+            img.alt = cardData.word;
+            card.appendChild(img);
 
-    for (const book in books) {
-        const bookButton = document.createElement("button");
-        bookButton.textContent = book;
-        bookButton.className = "bookButton";
-        bookButton.dataset.selected = "false";
-        bookButton.onclick = () => toggleBookSelection(bookButton, book);
-        bookSelectionContainer.appendChild(bookButton);
-    }
+            // Create scrambled letters
+            const scrambledContainer = document.createElement("div");
+            scrambledContainer.classList.add("scrambled");
 
-    // Create a button to load flashcards
-    const loadButton = document.createElement("button");
-    loadButton.innerHTML = "<span style='color: green;'>▶</span> Load Flashcards";
-    loadButton.onclick = loadFlashcards;
+            const letters = cardData.word.split("");
+            shuffle(letters);
 
-    // Append book buttons and load button to the app
-    app.appendChild(bookSelectionContainer);
-    app.appendChild(loadButton);
+            letters.forEach((letter) => {
+                const letterTile = document.createElement("div");
+                letterTile.textContent = letter;
+                letterTile.setAttribute("draggable", "true");
 
-    // Create a container for flashcards
-    const flashcardContainer = document.createElement("div");
-    flashcardContainer.id = "flashcardContainer";
-    app.appendChild(flashcardContainer);
-}
+                letterTile.addEventListener("dragstart", (e) => {
+                    e.dataTransfer.setData("text", letter);
+                });
 
-// Toggle book selection
-function toggleBookSelection(button, book) {
-    const isSelected = button.dataset.selected === "true";
-    button.dataset.selected = isSelected ? "false" : "true";
-    button.style.backgroundColor = isSelected ? "grey" : "green";
-    button.style.color = isSelected ? "white" : "black";
-}
+                scrambledContainer.appendChild(letterTile);
+            });
 
-// Shuffle array function
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
+            card.appendChild(scrambledContainer);
 
-// Load flashcards based on the selected books
-function loadFlashcards() {
-    const selectedBooks = Array.from(document.querySelectorAll(".bookButton[data-selected='true']"))
-        .map(button => button.textContent);
-    const flashcardContainer = document.getElementById("flashcardContainer");
+            // Create empty slots
+            const slotsContainer = document.createElement("div");
+            slotsContainer.classList.add("slots");
 
-    // Clear any existing flashcards
-    flashcardContainer.innerHTML = "";
+            const slots = [];
+            cardData.word.split("").forEach((_, index) => {
+                const slot = document.createElement("div");
+                slot.addEventListener("dragover", (e) => e.preventDefault());
 
-    // Collect words from all selected books
-    let words = [];
-    selectedBooks.forEach(book => {
-        words = words.concat(books[book].map(word => ({ word, book })));
-    });
+                slot.addEventListener("drop", (e) => {
+                    const droppedLetter = e.dataTransfer.getData("text");
+                    slot.textContent = droppedLetter;
 
-    // Shuffle the words
-    words = shuffleArray(words);
+                    // Check if the word is correct
+                    const currentWord = slots.map((s) => s.textContent).join("");
+                    if (currentWord === cardData.word) {
+                        card.classList.add("correct");
+                    } else {
+                        card.classList.remove("correct");
+                    }
+                });
 
-    // Create flashcards for each word
-    words.forEach(({ word, book }) => {
-        const flashcard = document.createElement("div");
-        flashcard.className = "flashcard";
+                slots.push(slot);
+                slotsContainer.appendChild(slot);
+            });
 
-        // Add the word text
-        const wordText = document.createElement("div");
-        wordText.textContent = word;
-        wordText.className = "wordText";
-        flashcard.appendChild(wordText);
-
-        // Add a sound icon
-        const soundIcon = document.createElement("button");
-        soundIcon.textContent = "🔊";
-        soundIcon.className = "soundIcon";
-        soundIcon.onclick = () => playSound(word);
-        flashcard.appendChild(soundIcon);
-
-        // Add the book number
-        const bookNumber = document.createElement("div");
-        bookNumber.textContent = book;
-        bookNumber.className = "bookNumber";
-        flashcard.appendChild(bookNumber);
-
-        flashcardContainer.appendChild(flashcard);
-    });
-}
-
-// Play sound for a word (placeholder functionality)
-function playSound(word) {
-    const utterance = new SpeechSynthesisUtterance(word);
-    speechSynthesis.speak(utterance);
-}
-
-// Add styles for the app
-const style = document.createElement("style");
-style.textContent = `
-    #app {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin: 20px;
-    }
-
-    #bookSelectionContainer {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
-
-    .bookButton {
-        margin: 5px;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        background-color: grey;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-    }
-
-    .bookButton:hover {
-        background-color: darkgrey;
-    }
-
-    button {
-        margin: 10px;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-
-    #flashcardContainer {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
-    .flashcard {
-        width: 150px;
-        height: 100px;
-        margin: 10px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        background-color: lightblue;
-        border: 2px solid darkblue;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: transform 0.2s;
-        position: relative;
-    }
-
-    .flashcard:hover {
-        transform: scale(1.1);
-    }
-
-    .flashcard button.soundIcon {
-        margin-top: 10px;
-        background: none;
-        color: black;
-        border: none;
-        font-size: 20px;
-        cursor: pointer;
-    }
-
-    .flashcard button.soundIcon:hover {
-        color: darkgrey;
-    }
-
-    .wordText {
-        font-size: 24px;
-    }
-
-    .bookNumber {
-        position: absolute;
-        bottom: 5px;
-        right: 10px;
-        font-size: 14px;
-        color: darkblue;
-    }
-`;
-
-document.head.appendChild(style);
-
-// Attach the app to the DOM
-const appContainer = document.createElement("div");
-appContainer.id = "app";
-document.body.appendChild(appContainer);
-
-// Initialize the application
-initApp();
-
+            card.appendChild(slotsContainer);
+            container.appendChild(card);
+        }
     </script>
 </body>
 </html>
+
